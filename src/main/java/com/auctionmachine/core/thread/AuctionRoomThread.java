@@ -25,7 +25,7 @@ public class AuctionRoomThread extends Thread{
 	
 	@Override
 	public void run() {
-		this.auctionRoomLoop();
+		//this.auctionRoomLoop();
 	}
 	
 	private void auctionRoomLoop(){
