@@ -1,46 +1,35 @@
 package com.auctionmachine.resources.controller;
-import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.auctionmachine.util.JwtUtil;
-
-import lombok.Data;
+import com.auctionmachine.resources.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")  // ReactのCORS対応
 public class AuthController {
-    private final JwtUtil jwtUtil;
 
-    public AuthController(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    @Autowired
+    private AuthService authService;
+
+    // ログイン用DTO（リクエストボディ用）
+    public static class LoginRequest {
+        public String email;
+        public String password;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        if ("user".equals(request.getUsername()) && "password".equals(request.getPassword())) {
-            String token = jwtUtil.generateToken(request.getUsername());
-            return ResponseEntity.ok(new AuthResponse(token));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ログイン失敗");
-        }
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        String token = authService.login(request.email, request.password);
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        return ResponseEntity.ok(response);
     }
-}
-
-@Data
-class AuthRequest {
-    private String username;
-    private String password;
-    // ゲッター・セッター
-}
-
-class AuthResponse {
-    private String token;
-    public AuthResponse(String token) { this.token = token; }
-    public String getToken() { return token; }
 }
