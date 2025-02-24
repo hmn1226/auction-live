@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class AuctionRequest {
+public class AuctionRequest{
 	String auctionRoomId;
 	String liverUlid;
 	List<Entry> entries = new ArrayList<>();

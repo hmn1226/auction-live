@@ -3,6 +3,8 @@ package com.auctionmachine.resources.service;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.auctionmachine.resources.model.AuctionModel;
@@ -19,6 +21,11 @@ public class AuctionService {
 	RedisUtil redisUtil;
 	
 	public AuctionsResponse get() {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // 
+        System.out.println("HOGE::"+email);
+        
 		AuctionsResponse ret = new AuctionsResponse();
 		Set<String> keys = this.redisUtil.scanKeys("auction:");
 		for(String key : keys) {

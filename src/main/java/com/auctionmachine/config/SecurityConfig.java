@@ -1,60 +1,76 @@
 package com.auctionmachine.config;
+
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.auctionmachine.security.JwtAuthenticationFilter;
+
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            // (1) CSRFを無効化 (API利用の場合)
-            .csrf(csrf -> csrf.disable())
-            
-            // (2) CORSを有効化
-            .cors(cors -> { 
-                // 必要ならここで `corsConfigurationSource()` を指定
-            })
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-            // 認証のパターン
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() 
-                .anyRequest().authenticated()
-            );
-        
-        return http.build();
-    }
+	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+	}
 
-    // (オプション) ここでCORS用設定をBeanにして返す
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+		// (1) CSRFを無効化 (API 利用の場合)
+		.csrf(csrf -> csrf.disable())
 
-        // Reactアプリが http://localhost:3000 ならそれを許可
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        
-        // 使用するHTTPメソッドを許可
-        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        
-        // 送信されるヘッダを許可
-        // Authorization ヘッダが必要なので、ここに含める
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        
-        // (必要に応じて) レスポンスヘッダのExposeなどを設定
-        configuration.setExposedHeaders(List.of("Authorization"));
+		// (2) CORS を有効化
+		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-        //configuration.setAllowCredentials(true);
+		// (3) セッションをステートレスにする (JWT利用のため)
+		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        // このCORS設定を適用するパスパターン
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+		// (4) 認証ルールを定義
+		.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/api/auth/**").permitAll()  // ログイン・認証 API は許可
+				.anyRequest().authenticated()  // それ以外の API は認証必須
+				)
+
+		// (5) JWT フィルターを適用
+		.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+
+		// React (フロント) との通信を許可
+		configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+
+		// HTTP メソッドを許可
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+		// 送信ヘッダの許可
+		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+		// レスポンスで Authorization ヘッダを露出
+		configuration.setExposedHeaders(List.of("Authorization"));
+
+		// Cookie 認証を許可 (JWT 利用時は false でも OK)
+		configuration.setAllowCredentials(true); 
+
+		// CORS 設定を適用するパス
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 }

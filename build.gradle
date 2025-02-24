@@ -53,6 +53,8 @@ dependencies {
 	
     runtimeOnly 'com.h2database:h2'
     
+    // https://mvnrepository.com/artifact/de.huxhorn.sulky/de.huxhorn.sulky.ulid
+	implementation group: 'de.huxhorn.sulky', name: 'de.huxhorn.sulky.ulid', version: '8.3.0'
 }
 
 tasks.named('test') {
