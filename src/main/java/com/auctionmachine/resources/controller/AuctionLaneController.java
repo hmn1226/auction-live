@@ -21,8 +21,8 @@ public class AuctionLaneController {
 	
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/status")
 	public void status(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -31,8 +31,8 @@ public class AuctionLaneController {
 	}
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/current-price")
 	public void currentPrice(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody CurrentPriceRequest currentPriceRequest
 	) {
 		currentPriceRequest.setAuctionRoomId(auctionRoomId);
@@ -41,8 +41,8 @@ public class AuctionLaneController {
 	}
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/next-entry")
 	public void nextEntry(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -51,8 +51,8 @@ public class AuctionLaneController {
 	}
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/prev-entry")
 	public void prevEntry(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -61,8 +61,8 @@ public class AuctionLaneController {
 	}
 	@GetMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/current-entry")
 	public CurrentEntry currentEntry(
-		@PathVariable("auctionRoomId") String auctionRoomId,
-		@PathVariable("auctionLaneId") Integer auctionLaneId,
+		@PathVariable String auctionRoomId,
+		@PathVariable Integer auctionLaneId,
 		@RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -71,8 +71,8 @@ public class AuctionLaneController {
 	}
 	@GetMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/current-lane")
 	public CurrentLane currentLane(
-		@PathVariable("auctionRoomId") String auctionRoomId,
-		@PathVariable("auctionLaneId") Integer auctionLaneId,
+		@PathVariable String auctionRoomId,
+		@PathVariable Integer auctionLaneId,
 		@RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -81,8 +81,8 @@ public class AuctionLaneController {
 	}
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/resolve-bids")
 	public void resolveBids(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -93,8 +93,8 @@ public class AuctionLaneController {
 
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/resolve-live-bids")
 	public void resolveLiveBids(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -103,8 +103,8 @@ public class AuctionLaneController {
 	}
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/resolve-pre-bids")
 	public void resolvePreBids(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);
@@ -113,8 +113,8 @@ public class AuctionLaneController {
 	}
 	@PostMapping("/api/auction-lane/{auctionRoomId}/{auctionLaneId}/debug")
 	public void debug(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
-	        @PathVariable("auctionLaneId") Integer auctionLaneId,
+	        @PathVariable String auctionRoomId,
+	        @PathVariable Integer auctionLaneId,
 	        @RequestBody AuctionLaneRequest auctionLaneRequest
 	) {
 		auctionLaneRequest.setAuctionRoomId(auctionRoomId);

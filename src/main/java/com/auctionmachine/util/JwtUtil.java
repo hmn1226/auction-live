@@ -1,10 +1,14 @@
 package com.auctionmachine.util;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -19,6 +23,9 @@ public class JwtUtil {
 		Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
 		return Jwts.builder()
 				.setSubject(userDetails.getUsername()) // 通常はここにユーザ名やIDなどをセット
+				.claim("role", userDetails.getAuthorities().stream()
+			            .map(GrantedAuthority::getAuthority) // ここで "ROLE_ADMIN" などを取得
+			            .collect(Collectors.toList()))       // List で格納する
 				.setIssuedAt(now)
 				.setExpiration(expiryDate)
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -31,6 +38,14 @@ public class JwtUtil {
 				.parseClaimsJws(token)
 				.getBody()
 				.getSubject();
+	}
+	public List<String> extractRoles(String token) {
+	    Claims claims = Jwts.parser()
+	        .setSigningKey(SECRET_KEY)
+	        .parseClaimsJws(token)
+	        .getBody();
+
+	    return claims.get("role", List.class); // List<String> 形式で取得
 	}
 
 	public boolean validateToken(String token, UserDetails userDetails) {

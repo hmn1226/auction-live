@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebSocketCorsConfig {
 
     @Bean(name = "webSocketCorsConfigurer")
-    public WebMvcConfigurer webSocketCorsConfigurer() {
+    WebMvcConfigurer webSocketCorsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {

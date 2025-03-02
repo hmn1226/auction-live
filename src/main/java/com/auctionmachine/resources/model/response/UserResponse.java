@@ -10,11 +10,13 @@ public class UserResponse {
 	String password;
 	String nickname;
 	String ulid;
+	String role;
 	
 	public void set(UserModel userModel) {
 		this.email = userModel.getEmail();
 		this.password = userModel.getPassword();
 		this.nickname = userModel.getNickname();
 		this.ulid = userModel.getUlid();
+		this.role = userModel.getRole();
 	}
 }

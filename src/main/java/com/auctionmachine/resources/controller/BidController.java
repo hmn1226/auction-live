@@ -18,9 +18,9 @@ public class BidController {
 	
 	@PostMapping("/api/pre-bid/{auctionRoomId}/{auctionLaneId}/{auctionEntryId}")
     public void preBid(
-            @PathVariable("auctionRoomId") String auctionRoomId,
-            @PathVariable("auctionLaneId") Integer auctionLaneId,
-            @PathVariable("auctionEntryId") String auctionEntryId,
+            @PathVariable String auctionRoomId,
+            @PathVariable Integer auctionLaneId,
+            @PathVariable String auctionEntryId,
     		@RequestBody PreBidRequest preBidRequest
     ) {
 		preBidRequest.setAuctionRoomId(auctionRoomId);
@@ -31,9 +31,9 @@ public class BidController {
 	
 	@PostMapping("/api/live-bid/{auctionRoomId}/{auctionLaneId}/{auctionEntryId}")
     public void liveBid(
-            @PathVariable("auctionRoomId") String auctionRoomId,
-            @PathVariable("auctionLaneId") Integer auctionLaneId,
-            @PathVariable("auctionEntryId") String auctionEntryId,
+            @PathVariable String auctionRoomId,
+            @PathVariable Integer auctionLaneId,
+            @PathVariable String auctionEntryId,
     		@RequestBody LiveBidRequest liveBidRequest
     ) {
 		liveBidRequest.setAuctionRoomId(auctionRoomId);

@@ -26,7 +26,7 @@ public class AuctionController {
 	
 	@PutMapping("/api/auctions/{auctionRoomId}")
 	public AuctionResponse put(
-		@PathVariable("auctionRoomId") String auctionRoomId,
+		@PathVariable String auctionRoomId,
         @RequestBody AuctionRequest auctionRequest
 	) {
 		auctionRequest.setAuctionRoomId(auctionRoomId);
@@ -35,7 +35,7 @@ public class AuctionController {
 	
 	@DeleteMapping("/api/auctions/{auctionRoomId}")
 	public void delete(
-		@PathVariable("auctionRoomId") String auctionRoomId
+		@PathVariable String auctionRoomId
 	) {
 		this.auctionService.delete(auctionRoomId);
 	}

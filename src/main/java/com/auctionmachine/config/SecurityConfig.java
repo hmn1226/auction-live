@@ -26,7 +26,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 		// (1) CSRFを無効化 (API 利用の場合)
 		.csrf(csrf -> csrf.disable())
@@ -40,8 +40,10 @@ public class SecurityConfig {
 		// (4) 認証ルールを定義
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/auth/**").permitAll()  // ログイン・認証 API は許可
+				.requestMatchers("/gs-guide-websocket/**").permitAll() // WebSocketを許可
+				.requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")  // ADMINのみ
 				.anyRequest().authenticated()  // それ以外の API は認証必須
-				)
+		)
 
 		// (5) JWT フィルターを適用
 		.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -50,7 +52,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
+	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		// React (フロント) との通信を許可

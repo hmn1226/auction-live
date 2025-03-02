@@ -25,7 +25,7 @@ public class AuctionRoomThread extends Thread{
 	
 	@Override
 	public void run() {
-		//this.auctionRoomLoop();
+		this.auctionRoomLoop();
 	}
 	
 	private void auctionRoomLoop(){
@@ -41,14 +41,16 @@ public class AuctionRoomThread extends Thread{
 	
 	private void send() throws JsonProcessingException {
 		MessagingService ms = MessagingService.getInstance();
-		for(AuctionLaneMonitor alm :  this.auctionRoom.getAuctionRoomMonitor().getAuctionLaneMonitors() ) {
-			alm.setHoge(alm.getHoge()+1);
+		if(ms!=null) {
+			for(AuctionLaneMonitor alm :  this.auctionRoom.getAuctionRoomMonitor().getAuctionLaneMonitors() ) {
+				alm.setHoge(alm.getHoge()+1);
+			}
+			MessagingModel model = new MessagingModel();
+			ObjectMapper objectMapper = new ObjectMapper();
+	        String jsonString = objectMapper.writeValueAsString(this.auctionRoom.getAuctionRoomMonitor());
+	        model.setContent(jsonString);
+			ms.sendMessage("/topic/messages/room1" ,model);			
 		}
-		MessagingModel model = new MessagingModel();
-		ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(this.auctionRoom.getAuctionRoomMonitor());
-        model.setContent(jsonString);
-		ms.sendMessage("/topic/messages/room1" ,model);
 	}
 	
 	public void destroy() {

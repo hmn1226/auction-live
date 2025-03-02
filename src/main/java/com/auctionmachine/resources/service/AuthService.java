@@ -1,38 +1,57 @@
 package com.auctionmachine.resources.service;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.auctionmachine.resources.model.UserModel;
+import com.auctionmachine.resources.model.response.ExceptionResponse;
+import com.auctionmachine.resources.repository.UserRepository;
 import com.auctionmachine.util.JwtUtil;
 
 @Service
 public class AuthService {
-	// DBは使わずに固定ユーザで認証するため、UserRepositoryは削除（またはコメントアウト）
-    // private final UserRepository userRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    /**
-     * DBを使わず、特定のメールアドレス＆パスワードを決め打ちで認証するサンプル。
-     */
-    public String login(String email, String rawPassword) {
-        // もし入力された email / password が「固定の値」以外ならエラー
-        if (!"test@example.com".equals(email) || !"testpass".equals(rawPassword)) {
-            throw new RuntimeException("Invalid credentials");
-        }
+    @Autowired
+    private UserRepository userRepository;
 
-        // (1) 認証成功したら、UserDetailsを作る
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public ResponseEntity<?> login(String email, String rawPassword) {
+        UserModel userModel = userRepository.findByEmail(email);
+        
+        if (userModel == null || !passwordEncoder.matches(rawPassword, userModel.getPassword())) {
+            return loginError();
+        }else {
+            return loginSuccess(userModel);	
+        }
+    }
+
+    private ResponseEntity<?> loginSuccess(UserModel userModel) {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
-                .withUsername("test@example.com") // 固定のユーザ名（メールアドレス）
-                .password("")                     // ここはダミー。実際のパスワードは使わない
-                .authorities(new ArrayList<>())   // 必要に応じて権限を付ける
+                .withUsername(userModel.getEmail())
+                .password("")
+                .roles(userModel.getRole())
                 .build();
 
-        // (2) JWT発行
-        return jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(userDetails);
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        return ResponseEntity.ok(response);
+    }
+
+    private ResponseEntity<?> loginError() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionResponse("メールアドレスまたはパスワードが間違っています"));
     }
 }

@@ -48,7 +48,6 @@ dependencies {
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
 	
-	implementation 'javax.servlet:javax.servlet-api:4.0.1'
 	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	
     runtimeOnly 'com.h2database:h2'

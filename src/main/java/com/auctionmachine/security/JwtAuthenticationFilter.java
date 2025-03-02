@@ -1,14 +1,17 @@
 package com.auctionmachine.security;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -25,12 +28,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response,
-			FilterChain filterChain)
+	protected void doFilterInternal(
+			@NonNull HttpServletRequest request,
+			@NonNull HttpServletResponse response,
+			@NonNull FilterChain filterChain)
 					throws ServletException, IOException{
-
-		String authHeader = request.getHeader("Authorization");
 
 		String authorizationHeader = request.getHeader("Authorization");
 		String token = null;
@@ -39,14 +41,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			token = authorizationHeader.substring(7);
 			try {
-				email = jwtUtil.extractUsername(token);
-			} catch (Exception e) {
-				// トークンが不正な場合の対処
-			}
+	            email = jwtUtil.extractUsername(token);
+	            
+	            List<String> roles =jwtUtil.extractRoles(token);
+	            for(String role : roles) {
+	            	System.out.println("role:"+role);
+	            }
+	            
+	        } catch (io.jsonwebtoken.ExpiredJwtException ex) {
+	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401を返す
+	            response.setContentType("application/json");
+	            response.getWriter().write("{\"error\": \"ログイン有効期限が切れました。もう一度ログインしてください。\"}");
+	            return; // ここでフィルター処理を中断
+	        } catch (Exception ex) {
+	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	            response.setContentType("application/json");
+	            response.getWriter().write("{\"message\": \"ログインし直してください。\"}");
+	            return;
+	        }
 		}        
 		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UsernamePasswordAuthenticationToken authToken =
-					new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+			List<String> roles = jwtUtil.extractRoles(token); // JWT から roles を取得
+
+            List<SimpleGrantedAuthority> authorities = roles.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(email, null, authorities);
+
 			SecurityContextHolder.getContext().setAuthentication(authToken);
 		}
 		filterChain.doFilter(request, response);

@@ -35,6 +35,7 @@ public class UserService {
 				userBean.setNickname(userModel.getNickname());
 				userBean.setPassword(userModel.getPassword());
 				userBean.setUlid(userModel.getUlid());
+				userBean.setRole(userModel.getRole());
 				usersResponse.getUsers().add(userBean);
 			}
 			return ResponseEntity.ok(usersResponse);
@@ -45,25 +46,32 @@ public class UserService {
 			userResponse.setNickname(userModel.getNickname());
 			userResponse.setPassword(userModel.getPassword());
 			userResponse.setUlid(userModel.getUlid());
+			userResponse.setRole(userModel.getRole());
 			return ResponseEntity.ok(userResponse);
 		}
 	}
 	public UserResponse put(UserRequest userRequest) {
 		
 		UserModel userModel = this.userRepository.findByEmail(userRequest.getEmail());
-		if(userModel==null) {	
+		if(userModel==null) {//---新規登録
 		    ULID ulid = new ULID();
 		    String generatedUlid = ulid.nextULID();
 		    userModel = new UserModel();
 		    userModel.setEmail(userRequest.getEmail());
-		    userModel.setUlid(generatedUlid);   		    
+		    userModel.setUlid(generatedUlid);   
+		    userModel.setNickname(userRequest.getNickname());
+		    userModel.setRole(userRequest.getRole());
+		}else {//---更新の場合
+		    userModel.setNickname(userRequest.getNickname());
+		    userModel.setRole(userRequest.getRole());			
 		}
-	    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	    String hashedPassword = passwordEncoder.encode(userRequest.getPassword());
-	    userModel.setPassword(hashedPassword);
-	    userModel.setNickname(userRequest.getNickname());
-	    this.userRepository.save(userModel);
+		if(userRequest.getPassword()!=null) {
+		    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		    String hashedPassword = passwordEncoder.encode(userRequest.getPassword());
+		    userModel.setPassword(hashedPassword);
+		}
 		
+	    this.userRepository.save(userModel);
 		UserResponse response = new UserResponse();
 		response.set(userModel);
 		return response;

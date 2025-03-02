@@ -1,6 +1,5 @@
 package com.auctionmachine.web.socket.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,6 @@ public class MessagingService {
     private final SimpMessagingTemplate messagingTemplate;
 
     // コンストラクタで Spring が自動的に DI する
-    @Autowired
     public MessagingService(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
         instance = this;

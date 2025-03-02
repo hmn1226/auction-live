@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class BeanUtil {
 
@@ -15,11 +14,13 @@ public class BeanUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
+    /*
     private static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());  // JavaTimeModuleを登録
         return mapper;
     }
+    */
 
     public static <T> T deepCopy(Class<T> clazz, T object) {
         try {

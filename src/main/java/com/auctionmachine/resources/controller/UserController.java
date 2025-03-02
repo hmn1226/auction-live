@@ -26,16 +26,15 @@ public class UserController {
 	}
 	@PutMapping("/api/users/{email}")
 	public UserResponse put(
-		@PathVariable("email") String email,
+		@PathVariable String email,
         @RequestBody UserRequest userRequest
 	) {
 		userRequest.setEmail(email);
 		return this.userService.put(userRequest);
 	}
-	
 	@DeleteMapping("/api/users/{email}")
 	public void delete(
-		@PathVariable("email") String email
+		@PathVariable String email
 	) {
 		this.userService.delete(email);
 	}

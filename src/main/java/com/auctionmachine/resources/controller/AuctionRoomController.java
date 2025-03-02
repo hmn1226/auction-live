@@ -18,7 +18,7 @@ public class AuctionRoomController {
 	
 	@GetMapping("/api/auction-room/{auctionRoomId}/monitor")
 	public AuctionRoomMonitor monitor(
-	        @PathVariable("auctionRoomId") String auctionRoomId,
+	        @PathVariable String auctionRoomId,
 	        @RequestBody AuctionRoomRequest auctionRoomRequest
 	) {
 		auctionRoomRequest.setAuctionRoomId(auctionRoomId);

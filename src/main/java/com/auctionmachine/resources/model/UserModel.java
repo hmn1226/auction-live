@@ -8,4 +8,5 @@ public class UserModel {
 	String password;
 	String nickname;
 	String ulid;
+	String role;
 }
