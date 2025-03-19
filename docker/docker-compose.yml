@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"  # LocalStackのメインエンドポイント
+    environment:
+      - SERVICES=sqs  # SQSを有効化
+      - DEBUG=1       # デバッグモード（任意）
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
