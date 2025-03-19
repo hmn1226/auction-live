@@ -35,3 +35,21 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### AWS Credentials and Secrets ###
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.pem
+*.key
+aws-credentials.properties
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+### Temporary Files ###
+replacements.txt
+secrets.txt
+bfg.jar
