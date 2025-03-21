@@ -36,6 +36,11 @@ out/
 ### VS Code ###
 .vscode/
 
+### Node.js ###
+node_modules/
+frontend/node_modules/
+frontend/node-v20.11.1-darwin-arm64/
+
 ### AWS Credentials and Secrets ###
 .env
 .env.local

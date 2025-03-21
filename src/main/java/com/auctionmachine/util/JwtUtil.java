@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -15,12 +16,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtil {
 
-	private final String SECRET_KEY = "PxzCAJ3Pn3arhXa3/q2LqIufJ43Nf/h1x4x8p++7G7g=";
-	private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1時間 (ミリ秒)
+	@Value("${jwt.secret-key}")
+	private String secretKey;
+	
+	@Value("${jwt.expiration-time}")
+	private long expirationTime;
 
 	public String generateToken(UserDetails userDetails) {
 		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
+		Date expiryDate = new Date(now.getTime() + expirationTime);
 		return Jwts.builder()
 				.setSubject(userDetails.getUsername()) // 通常はここにユーザ名やIDなどをセット
 				.claim("role", userDetails.getAuthorities().stream()
@@ -28,20 +32,20 @@ public class JwtUtil {
 			            .collect(Collectors.toList()))       // List で格納する
 				.setIssuedAt(now)
 				.setExpiration(expiryDate)
-				.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+				.signWith(SignatureAlgorithm.HS256, secretKey)
 				.compact();
 	}
 
 	public String extractUsername(String token) {
 		return Jwts.parser()
-				.setSigningKey(SECRET_KEY)
+				.setSigningKey(secretKey)
 				.parseClaimsJws(token)
 				.getBody()
 				.getSubject();
 	}
 	public List<String> extractRoles(String token) {
 	    Claims claims = Jwts.parser()
-	        .setSigningKey(SECRET_KEY)
+	        .setSigningKey(secretKey)
 	        .parseClaimsJws(token)
 	        .getBody();
 
@@ -55,7 +59,7 @@ public class JwtUtil {
 
 	private boolean isTokenExpired(String token) {
 		Date expiration = Jwts.parser()
-				.setSigningKey(SECRET_KEY)
+				.setSigningKey(secretKey)
 				.parseClaimsJws(token)
 				.getBody()
 				.getExpiration();

@@ -39,6 +39,13 @@ public class SecurityConfig {
 
 		// (4) 認証ルールを定義
 		.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/").permitAll() // ルートパスを許可
+				.requestMatchers("/index.html").permitAll() // index.htmlを許可
+				.requestMatchers("/static/**").permitAll() // 静的リソースを許可
+				.requestMatchers("/assets/**").permitAll() // アセットを許可
+				.requestMatchers("/favicon.ico").permitAll() // faviconを許可
+				.requestMatchers("/manifest.json").permitAll() // manifestを許可
+				.requestMatchers("/robots.txt").permitAll() // robots.txtを許可
 				.requestMatchers("/api/auth/**").permitAll()  // ログイン・認証 API は許可
 				.requestMatchers("/api/auction/**").permitAll()
 				.requestMatchers("/gs-guide-websocket/**").permitAll() // WebSocketを許可
@@ -57,7 +64,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		// React (フロント) との通信を許可
-		configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+		configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
 
 		// HTTP メソッドを許可
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

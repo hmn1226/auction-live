@@ -22,10 +22,10 @@ import software.amazon.awssdk.services.ses.model.SesException;
 @Component
 public class SesUtil {
 
-    private final List<String> recipientEmails;
-    private final String subject;
-    private final String body;
-    private final SesClient sesClient;
+    private List<String> recipientEmails;
+    private String subject;
+    private String body;
+    private SesClient sesClient;
 
     // 設定ファイルから読み込む値
     private static String accessKey;
@@ -63,7 +63,14 @@ public class SesUtil {
     }
 
     /**
-     * コンストラクタ
+     * デフォルトコンストラクタ（Spring用）
+     */
+    public SesUtil() {
+        // Spring用のデフォルトコンストラクタ
+    }
+
+    /**
+     * メール送信用コンストラクタ
      * 
      * @param recipientEmails 受信者メールアドレスのリスト
      * @param subject メール件名

@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.node-gradle.node' version '7.0.2' // Node.jsプラグイン
 }
 
 group = 'com.example'
@@ -21,7 +22,42 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/" // Gradleプラグインリポジトリ
+    }
 }
+
+// フロントエンドの設定
+node {
+    version = '20.11.1' // Node.jsのバージョン
+    npmVersion = '10.2.4' // npmのバージョン
+    download = true // 必要に応じてNode.jsをダウンロード
+    workDir = file("${project.projectDir}/frontend") // Node.jsの作業ディレクトリ
+    nodeProjectDir = file("${project.projectDir}/frontend") // プロジェクトディレクトリ
+}
+
+// フロントエンドのビルドタスク
+task installFrontend(type: NpmTask) {
+    description = 'フロントエンドの依存関係をインストール'
+    args = ['install']
+}
+
+task buildFrontend(type: NpmTask) {
+    description = 'フロントエンドをビルド'
+    args = ['run', 'build']
+    dependsOn installFrontend
+}
+
+// フロントエンドのビルド成果物をSpringの静的リソースディレクトリにコピー
+task copyFrontendBuild(type: Copy) {
+    description = 'フロントエンドのビルド成果物をSpringの静的リソースディレクトリにコピー'
+    from "${project.projectDir}/frontend/build"
+    into "${project.projectDir}/src/main/resources/static"
+    dependsOn buildFrontend
+}
+
+// Springのビルドプロセスにフロントエンドのビルドを統合
+processResources.dependsOn copyFrontendBuild
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
