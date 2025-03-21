@@ -54,7 +54,7 @@ public class InfiniteLoopObserveThread extends Thread {
 					logger.debug("オークションルーム検出: {}", model.getAuctionRoomId());
 					
 					// 各オークションルームの監視スレッドを起動
-					new AuctionRoomObserveThread(this, model).start();
+					//new AuctionRoomObserveThread(this, model).start();
 					
 					// スレッド情報のログ出力（必要に応じてコメント解除）
 					/*

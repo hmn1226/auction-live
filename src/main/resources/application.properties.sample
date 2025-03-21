@@ -1,41 +1,52 @@
 spring.application.name=AuctionMachine
 server.port=8080
 
+# Redis設定
 spring.redis.host=localhost
 spring.redis.port=6379
 spring.redis.timeout=6000
 
 # AWS設定
 # 実際の値は環境変数または外部設定ファイルで提供してください
-aws.access-key=${AWS_ACCESS_KEY:YOUR_ACCESS_KEY}
-aws.secret-key=${AWS_SECRET_KEY:YOUR_SECRET_KEY}
+aws.access-key=${AWS_ACCESS_KEY:your_access_key_here}
+aws.secret=${AWS_SECRET_KEY:your_secret_here}
 aws.region=ap-northeast-1
-aws.ses.sender-email=mic-sales@inter-mic.co.jp
+aws.ses.sender-email=your_email@example.com
 
 # JWT設定
 # 実際の値は環境変数で提供してください
-jwt.secret-key=${JWT_SECRET_KEY:dummy_key_for_development}
+# 注意: HS256アルゴリズムを使用する場合、キーは256ビット以上である必要があります
+jwt.secret-key=${JWT_SECRET_KEY:your_secure_key_with_at_least_256_bits_length_here}
 jwt.expiration-time=3600000
 
 # セキュリティ設定
-# パスワードエンコーディングはBCryptを使用
-security.password.encoder=bcrypt
+# エンコーディング設定
+security.encoder=bcrypt
 
+# 開発ツール設定
 spring.devtools.restart.enabled=true
 spring.devtools.livereload.enabled=true
 spring.devtools.restart.poll-interval=2s
 spring.devtools.restart.quiet-period=1s
 
+# Jackson設定
 spring.jackson.serialization.write-dates-as-timestamps=false
+
+# ログ設定
+logging.level.root=INFO
+logging.level.com.auctionmachine=DEBUG
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate=INFO
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
 
 # CORS設定
 # 開発環境ではlocalhostを許可、本番環境では適切な値を設定してください
-cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://127.0.0.1:3000}
+cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://127.0.0.1:3000,http://localhost:3000}
 cors.allowed-methods=${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
 cors.allow-credentials=${CORS_ALLOW_CREDENTIALS:true}
 
 # WebSocket設定
-websocket.allowed-origins=${WEBSOCKET_ALLOWED_ORIGINS:http://127.0.0.1:3000}
+websocket.allowed-origins=${WEBSOCKET_ALLOWED_ORIGINS:http://127.0.0.1:3000,http://localhost:3000}
 websocket.endpoint=${WEBSOCKET_ENDPOINT:/ws}
 
 # アプリケーションURL設定

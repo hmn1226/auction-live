@@ -43,6 +43,7 @@ public class SecurityConfig {
 				.requestMatchers("/index.html").permitAll() // index.htmlを許可
 				.requestMatchers("/static/**").permitAll() // 静的リソースを許可
 				.requestMatchers("/assets/**").permitAll() // アセットを許可
+				.requestMatchers("/img/**").permitAll() // 画像ファイルを許可
 				.requestMatchers("/favicon.ico").permitAll() // faviconを許可
 				.requestMatchers("/manifest.json").permitAll() // manifestを許可
 				.requestMatchers("/robots.txt").permitAll() // robots.txtを許可

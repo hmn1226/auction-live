@@ -50,6 +50,7 @@ frontend/node-v20.11.1-darwin-arm64/
 *.pem
 *.key
 aws-credentials.properties
+application.properties
 application-local.properties
 application-dev.properties
 application-prod.properties
