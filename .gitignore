@@ -58,15 +58,3 @@ application-prod.properties
 replacements.txt
 secrets.txt
 bfg.jar
-
-### Files with potential sensitive information ###
-src/main/java/com/auctionmachine/lib/CorsConfig.java
-src/main/java/com/auctionmachine/resources/model/AuctionRoomModel.java
-src/main/java/com/auctionmachine/resources/schema/auction/AuctionResponse.java
-src/main/java/com/auctionmachine/resources/schema/user/UserRequest.java
-src/main/java/com/auctionmachine/resources/service/AuthService.java
-src/main/java/com/auctionmachine/util/JwtUtil.java
-src/main/java/com/auctionmachine/util/RedisUtil.java
-src/main/java/com/auctionmachine/web/socket/config/WebSocketConfig.java
-src/main/java/com/auctionmachine/web/socket/config/WebSocketCorsConfig.java
-src/main/java/com/auctionmachine/web/socket/interceptor/JwtHandshakeInterceptor.java
