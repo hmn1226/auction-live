@@ -22,6 +22,7 @@ public class JwtUtil {
 	@Value("${jwt.expiration-time}")
 	private long expirationTime;
 
+	@SuppressWarnings("deprecation")
 	public String generateToken(UserDetails userDetails) {
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + expirationTime);
@@ -35,7 +36,7 @@ public class JwtUtil {
 				.signWith(SignatureAlgorithm.HS256, secretKey)
 				.compact();
 	}
-
+	@SuppressWarnings("deprecation")
 	public String extractUsername(String token) {
 		return Jwts.parser()
 				.setSigningKey(secretKey)
@@ -43,6 +44,7 @@ public class JwtUtil {
 				.getBody()
 				.getSubject();
 	}
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public List<String> extractRoles(String token) {
 	    Claims claims = Jwts.parser()
 	        .setSigningKey(secretKey)
@@ -56,7 +58,7 @@ public class JwtUtil {
 		final String username = extractUsername(token);
 		return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
 	}
-
+	@SuppressWarnings("deprecation")
 	private boolean isTokenExpired(String token) {
 		Date expiration = Jwts.parser()
 				.setSigningKey(secretKey)

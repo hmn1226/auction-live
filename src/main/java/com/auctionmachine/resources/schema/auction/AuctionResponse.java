@@ -9,8 +9,10 @@ import com.auctionmachine.resources.model.EntryModel.EntryImageModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 @JsonIgnoreProperties(ignoreUnknown = true) 
 public class AuctionResponse extends AuctionSchema{
 	public void setAuctionRoomModel(AuctionRoomModel model) {

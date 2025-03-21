@@ -88,7 +88,8 @@ public class RedisUtil {
     public Set<String> scanKeys(String pattern) {
         Set<String> keys = new HashSet<>();
         ScanOptions options = ScanOptions.scanOptions().match(pattern + "*").build();
-        try (Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(options)) {
+        try (@SuppressWarnings({ "null", "deprecation" })
+        Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(options)) {
             while (cursor.hasNext()) {
                 keys.add(new String(cursor.next(), StandardCharsets.UTF_8)); // 文字エンコーディングを修正
             }

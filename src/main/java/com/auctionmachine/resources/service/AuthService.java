@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
@@ -42,7 +43,11 @@ public class AuthService {
 	@Autowired
 	private JwtUtil jwtUtil;
 
-	private static final String BASE_URL = "http://localhost:3000/emailVerification/";
+	@Value("${app.base-url}")
+	private String baseUrl;
+
+	@Value("${app.email-verification-path}")
+	private String emailVerificationPath;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -152,12 +157,8 @@ public class AuthService {
 		this.verificationRepository.save(verificationModel);
 	}
 	
-	private void checkVerified() {
-		
-	}
-	
 	private void sendVerificationEmail(String email, String verificationToken, String verificationCode) {
-		String verificationUrl = BASE_URL + verificationToken;
+		String verificationUrl = baseUrl + emailVerificationPath + verificationToken;
 		String subject = "【AuctionLIVE!】認証コードのお知らせ";
 		String body = 
 				"<h1>認証コードのお知らせ</h1>"+

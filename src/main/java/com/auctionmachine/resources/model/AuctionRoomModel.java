@@ -25,8 +25,6 @@ public class AuctionRoomModel extends BaseModel{
 	Integer laneAmount;
 	Integer priceInterval;
 	
-	private final static long defaultAuctionTime = 60*60;// 60min
-	
 	List<Integer> auctionLaneIds = new ArrayList<>();
 	
 	public AuctionRoomModel() {

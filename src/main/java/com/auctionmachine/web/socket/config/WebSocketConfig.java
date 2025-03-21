@@ -1,5 +1,6 @@
 package com.auctionmachine.web.socket.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -12,16 +13,22 @@ import com.auctionmachine.web.socket.interceptor.JwtHandshakeInterceptor;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${websocket.allowed-origins}")
+    private String allowedOrigins;
+
+    @Value("${websocket.endpoint}")
+    private String endpoint;
+
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/gs-guide-websocket")
-                .setAllowedOrigins("http://localhost:3000")
+    public void registerStompEndpoints(@SuppressWarnings("null") StompEndpointRegistry registry) {
+        registry.addEndpoint(endpoint)
+                .setAllowedOrigins(allowedOrigins.split(","))
                 .addInterceptors(new JwtHandshakeInterceptor())
                 .withSockJS();
     }
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
+    public void configureMessageBroker(@SuppressWarnings("null") MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }

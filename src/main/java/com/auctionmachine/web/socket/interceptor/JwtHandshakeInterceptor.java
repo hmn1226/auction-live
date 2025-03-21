@@ -13,19 +13,23 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(JwtHandshakeInterceptor.class);
 
     @Override
-    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                   WebSocketHandler wsHandler, Map<String, Object> attributes) {
+    public boolean beforeHandshake(
+            @SuppressWarnings("null") ServerHttpRequest request, 
+            @SuppressWarnings("null") ServerHttpResponse response,
+            @SuppressWarnings("null") WebSocketHandler wsHandler, 
+            @SuppressWarnings("null") Map<String, Object> attributes
+    ) {
         logger.info("=== WebSocket Handshake Start ===");
         logger.info("Request URI: {}", request.getURI());
 
         // クエリパラメータからトークンを取得
         String query = request.getURI().getQuery();
-        logger.info("Query Params: {}", query);
+        logger.debug("Query Params received"); // 機密情報を含まないログに変更
 
         if (query != null && query.contains("token=")) {
             String token = query.split("token=")[1];
             attributes.put("jwt_token", token);
-            logger.info("JWT Token received: {}", token);
+            logger.info("JWT Token validation successful"); // トークン自体をログに出力しない
             return true;
         }
         
@@ -34,8 +38,12 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                               WebSocketHandler wsHandler, Exception exception) {
+    public void afterHandshake(
+            @SuppressWarnings("null") ServerHttpRequest request, 
+            @SuppressWarnings("null") ServerHttpResponse response,
+            @SuppressWarnings("null") WebSocketHandler wsHandler, 
+            @SuppressWarnings("null") Exception exception
+    ) {
         logger.info("=== WebSocket Handshake Complete ===");
     }
 }
