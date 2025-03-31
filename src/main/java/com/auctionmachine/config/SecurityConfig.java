@@ -49,6 +49,7 @@ public class SecurityConfig {
 				.requestMatchers("/robots.txt").permitAll() // robots.txtを許可
 				.requestMatchers("/api/auth/**").permitAll()  // ログイン・認証 API は許可
 				.requestMatchers("/api/auction/**").permitAll()
+				.requestMatchers("/api/health-check").permitAll() // ヘルスチェック API は許可
 				.requestMatchers("/gs-guide-websocket/**").permitAll() // WebSocketを許可
 				.requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")  // ADMINのみ
 				.anyRequest().authenticated()  // それ以外の API は認証必須

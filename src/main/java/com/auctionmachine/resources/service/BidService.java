@@ -14,6 +14,7 @@ import com.auctionmachine.resources.repository.AuctionLaneRepository;
 import com.auctionmachine.resources.repository.EntryRepository;
 import com.auctionmachine.resources.schema.bid.LiveBidRequest;
 import com.auctionmachine.resources.schema.bid.PreBidRequest;
+import com.auctionmachine.util.RedisUtil;
 
 /**
  * 入札処理を行うサービスクラス
@@ -24,16 +25,22 @@ public class BidService {
     
     private final AuctionLaneRepository auctionLaneRepository;
     private final EntryRepository entryRepository;
+    private final RedisUtil redisUtil;
+    
+    // Redis Streamsのキー
+    private static final String LIVE_BID_STREAM_KEY = "stream:live-bids";
     
     /**
      * コンストラクタインジェクション
      * 
      * @param auctionLaneRepository オークションレーンリポジトリ
      * @param entryRepository エントリーリポジトリ
+     * @param redisUtil Redisユーティリティ
      */
-    public BidService(AuctionLaneRepository auctionLaneRepository, EntryRepository entryRepository) {
+    public BidService(AuctionLaneRepository auctionLaneRepository, EntryRepository entryRepository, RedisUtil redisUtil) {
         this.auctionLaneRepository = auctionLaneRepository;
         this.entryRepository = entryRepository;
+        this.redisUtil = redisUtil;
     }
     
     /**
@@ -66,25 +73,49 @@ public class BidService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String ulid = authentication.getName();
         
-        AuctionLaneModel auctionLaneModel = 
-                this.auctionLaneRepository.getById(req.getAuctionRoomId(), req.getAuctionLaneId());
-        
-        EntryModel entryModel = this.entryRepository.getById(auctionLaneModel.getCurrentEntryId());
-        
-        if (req.getBidUserId() == null) {
-            req.setBidUserId(ulid);            
+        // Redis Streamsにライブ応札信号を追加（最初に行う）
+        String recordId = redisUtil.addToStream(LIVE_BID_STREAM_KEY, req);
+        if (recordId != null) {
+            // ログ出力
+            System.out.println("ライブ応札信号をRedis Streamsに追加しました: " + recordId);
         }
         
-        LiveBidModel liveBidModel = new LiveBidModel();
-        liveBidModel.setBidUserId(req.getBidUserId());
-        liveBidModel.setAuctionEntryId(req.getEntryId());
-        liveBidModel.setBidTime(Instant.now());
-        
-        auctionLaneModel.getLiveBidQueue().add(liveBidModel);
-        entryModel.getLiveBidList().add(liveBidModel);
-        
-        // リポジトリに変更を保存
-        this.auctionLaneRepository.put(auctionLaneModel);
-        this.entryRepository.put(entryModel);
+        try {
+            AuctionLaneModel auctionLaneModel = 
+                    this.auctionLaneRepository.getById(req.getAuctionRoomId(), req.getAuctionLaneId());
+            
+            // エントリーIDが設定されていない場合は、レーンの現在のエントリーIDを使用
+            String entryId = req.getEntryId();
+            if (entryId == null || entryId.isEmpty()) {
+                entryId = auctionLaneModel.getCurrentEntryId();
+                req.setEntryId(entryId);
+            }
+            
+            // エントリーIDが有効な場合のみ処理を続行
+            if (entryId != null && !entryId.isEmpty()) {
+                EntryModel entryModel = this.entryRepository.getById(entryId);
+                
+                if (req.getBidUserId() == null) {
+                    req.setBidUserId(ulid);            
+                }
+                
+                LiveBidModel liveBidModel = new LiveBidModel();
+                liveBidModel.setBidUserId(req.getBidUserId());
+                liveBidModel.setAuctionEntryId(entryId);
+                liveBidModel.setBidTime(Instant.now());
+                
+                auctionLaneModel.getLiveBidQueue().add(liveBidModel);
+                entryModel.getLiveBidList().add(liveBidModel);
+                
+                // リポジトリに変更を保存
+                this.auctionLaneRepository.put(auctionLaneModel);
+                this.entryRepository.put(entryModel);
+            } else {
+                System.out.println("有効なエントリーIDがありません。Redis Streamsへの追加のみ行いました。");
+            }
+        } catch (Exception e) {
+            System.out.println("エントリー処理中にエラーが発生しましたが、Redis Streamsへの追加は完了しています: " + e.getMessage());
+            // エラーを再スローしない - Redis Streamsへの追加は成功しているため
+        }
     }
 }

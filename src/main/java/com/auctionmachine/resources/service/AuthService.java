@@ -158,7 +158,8 @@ public class AuthService {
 	}
 	
 	private void sendVerificationEmail(String email, String verificationToken, String verificationCode) {
-		String verificationUrl = baseUrl + emailVerificationPath + verificationToken;
+		// 127.0.0.1をlocalhostに、verifyをemailVerificationに変更
+		String verificationUrl = baseUrl.replace("127.0.0.1", "localhost") + "/emailVerification/" + verificationToken;
 		String subject = "【AuctionLIVE!】認証コードのお知らせ";
 		String body = 
 				"<h1>認証コードのお知らせ</h1>"+
@@ -169,7 +170,8 @@ public class AuthService {
 				"以下のリンクをクリックしてメール認証を完了してください。<br>" +
 				verificationUrl + "<br>" +
 				"このコードは一定時間後に無効になります。<br>"+
-				"セキュリティのため、この認証コードを第三者に共有しないでください。"+
+				"セキュリティのため、この認証コードを第三者に共有しないでください。hoge"+
+
 				"認証コードを発行したことにお心当たりがない場合は、本メールを削除いただきますようお願いいたします。";
 		try {
 			SesUtil sesUtil = new SesUtil(Arrays.asList(email),subject,body);

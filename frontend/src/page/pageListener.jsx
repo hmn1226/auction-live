@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AuctionEntryItem from "../components/AuctionEntryItem";
 import Notification from "../components/Notification";
+import LoginModal from "../components/LoginModal";
 import { API_ENDPOINTS } from "../constants/api";
 import { formatDateTime } from "../utils/formatters";
 
@@ -28,6 +29,12 @@ export default function PageListener() {
     message: "",
     severity: "info"
   });
+  
+  // ログインモーダルの状態
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  
+  // 保留中の入札情報
+  const [pendingBid, setPendingBid] = useState(null);
 
   // auction が利用可能になったときに bidPrices を初期化する
   useEffect(() => {
@@ -62,8 +69,22 @@ export default function PageListener() {
     }));
   };
 
-  // 入札ボタン押下時に TextField の値を POST する
-  const onBidButtonClick = async (entry) => {
+  // ログインモーダルを閉じる
+  const handleCloseLoginModal = () => {
+    setLoginModalOpen(false);
+    setPendingBid(null);
+  };
+  
+  // ログイン成功後に保留中の入札を実行
+  const handleLoginSuccess = () => {
+    if (pendingBid) {
+      sendBid(pendingBid);
+      setPendingBid(null);
+    }
+  };
+  
+  // 入札リクエストを送信
+  const sendBid = async (entry) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -74,6 +95,9 @@ export default function PageListener() {
       // 送信前にカンマを除去して数値として扱う
       const bidPrice = bidPrices[entry.entryId].toString().replace(/,/g, "");
       
+      console.log(`送信URL: ${API_ENDPOINTS.LIVE_BID}/${entry.auctionRoomId}/${entry.auctionLaneId}/${entry.entryId}`);
+      console.log(`送信データ: `, { bidUserId, bidPrice: parseInt(bidPrice, 10) });
+      
       const response = await fetch(
         `${API_ENDPOINTS.LIVE_BID}/${entry.auctionRoomId}/${entry.auctionLaneId}/${entry.entryId}`,
         {
@@ -82,13 +106,17 @@ export default function PageListener() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ bidUserId, bidPrice }),
+          body: JSON.stringify({ 
+            bidUserId, 
+            bidPrice: parseInt(bidPrice, 10) // 文字列ではなく数値として送信
+          }),
         }
       );
 
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
           showNotification("認証エラーが発生しました。再ログインしてください。", "error");
+          setLoginModalOpen(true);
           return;
         }
         throw new Error(`エラー: ${response.status}`);
@@ -100,6 +128,20 @@ export default function PageListener() {
     } catch (error) {
       console.error("入札エラー:", error.message);
       showNotification(`入札エラー: ${error.message}`, "error");
+    }
+  };
+
+  // 入札ボタン押下時の処理
+  const onBidButtonClick = (entry) => {
+    // トークンの存在確認
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // ログインしていない場合は、モーダルを表示して入札情報を保存
+      setPendingBid(entry);
+      setLoginModalOpen(true);
+    } else {
+      // ログイン済みの場合は直接入札処理
+      sendBid(entry);
     }
   };
 
@@ -219,6 +261,12 @@ export default function PageListener() {
         message={notification.message}
         severity={notification.severity}
         onClose={handleCloseNotification}
+      />
+      
+      <LoginModal
+        open={loginModalOpen}
+        onClose={handleCloseLoginModal}
+        onLoginSuccess={handleLoginSuccess}
       />
       
       <Footer />

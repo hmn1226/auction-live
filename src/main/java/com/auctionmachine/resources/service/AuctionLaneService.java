@@ -20,7 +20,9 @@ import com.auctionmachine.resources.schema.auctionlane.CurrentPriceRequest;
  * レーンのステータス管理、エントリー移動、入札処理などの機能を提供する
  */
 @Service
-public class AuctionLaneService {
+public class 
+
+AuctionLaneService {
     
     private final AuctionLaneRepository auctionLaneRepository;
     private final EntryRepository entryRepository;

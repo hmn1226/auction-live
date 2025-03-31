@@ -1,5 +1,4 @@
 #!/bin/bash
 
-# React開発サーバーを起動するスクリプト
-echo "Reactの開発サーバーを起動します..."
+# Reactの開発サーバーを起動
 cd frontend && npm start

@@ -5,6 +5,40 @@ plugins {
     id 'com.github.node-gradle.node' version '7.0.2' // Node.jsプラグイン
 }
 
+// Spring Boot DevTools設定
+tasks.named('bootRun') {
+    // JVMオプションの設定
+    jvmArgs = [
+        '-Dspring.devtools.restart.enabled=true',
+        '-Dspring.devtools.livereload.enabled=true',
+        '-Dspring.devtools.restart.poll-interval=500',
+        '-Dspring.devtools.restart.quiet-period=200'
+    ]
+    // ファイル変更時に自動的にコンパイルを実行
+    sourceResources sourceSets.main
+}
+
+// 継続的なビルドを行うタスク
+task continuousBuild {
+    doLast {
+        println "継続的なビルドを開始します..."
+        println "ファイル変更を監視しています..."
+        println "終了するにはCtrl+Cを押してください"
+    }
+}
+
+// continuousBuildタスクを--continuousフラグ付きで実行
+tasks.named('continuousBuild') {
+    finalizedBy 'build'
+}
+
+// ファイル変更を監視して自動的にコンパイルを実行
+tasks.named('compileJava') {
+    options.compilerArgs << '-parameters'
+    options.fork = true
+    options.incremental = true
+}
+
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
@@ -71,7 +105,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // DevToolsを実行時クラスパスに追加
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
